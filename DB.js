@@ -107,13 +107,13 @@ async function createListing(client, newListing){
     console.log(`New listing created with the following id: ${result.insertedId}`);
 }
 
-// async function listDatabases(client){
-//     const databasesList = await client.db().admin().listDatabases();
+async function listDatabases(client){
+    const databasesList = await client.db().admin().listDatabases();
 
-//     console.log("Databases");
-//     databasesList.databases.forEach(db => {
-//         console.log(`- ${db.name}`);
-//     });
+    console.log("Databases");
+    databasesList.databases.forEach(db => {
+        console.log(`- ${db.name}`);
+    });
 
-// }
+}
 

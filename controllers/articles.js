@@ -2,14 +2,23 @@ let articles = [];
 
 export const getArticles = (req, res) => {
 
-    res.render('index', {articles: articles});
+    res.send(articles);
 }
 
-export const createArticle = (req, res) =>{
+export const createArticle = async (req, res) =>{
 
-    const article = req.body;
+    const article = new Article({
+        title: req.body.title,
+        description: req.body.description,
+        markdown: req.body.markdown
+    });
   
-    articles.push({ ...article });
+    try{
+        article = await article.save() 
+    }catch (e) {
+        res.render('index')
+    }
+    
   
     res.send(`article with the name ${article.title} added to the database`);
   

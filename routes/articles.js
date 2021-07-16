@@ -1,4 +1,5 @@
-import express from 'express';
+import express from "express";
+import {Article} from '../models/article.js';
 
 import { getArticles, createArticle, getArticle, deleteArticle, updateArticle } from '../controllers/articles.js';
 
