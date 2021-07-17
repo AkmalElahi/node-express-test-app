@@ -1,63 +1,149 @@
-let articles = [];
+import mongoose from "mongoose";
 
-export const getArticles = (req, res) => {
+import { Article } from "../models/article.js";
 
-    res.send(articles);
-}
-
-export const createArticle = async (req, res) =>{
-
-    const article = new Article({
-        title: req.body.title,
-        description: req.body.description,
-        markdown: req.body.markdown
+export const getArticles = async (req, res) => {
+  try {
+    const articles = await Article.find();
+    // return res.send({
+    //   success: true,
+    //   articles,
+    // });
+    return res.render("pages/articles", {
+      articles,
     });
-  
-    try{
-        article = await article.save() 
-    }catch (e) {
-        res.render('index')
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, message: "error in getting articles" });
+  }
+};
+
+export const createArticle = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    if (!title) {
+      return res
+        .status(401)
+        .send({ success: false, message: "article title is required" });
     }
-    
-  
-    res.send(`article with the name ${article.title} added to the database`);
-  
-}
+    const article = new Article({
+      title,
+      description,
+    });
+    const newArticle = await article.save();
+    getArticles(req, res);
+    // res.send({
+    //   success: true,
+    //   message: `article with the name ${newArticle.title} added to the database`,
+    // });
+  } catch (error) {
+    res
+      .status(400)
+      .send({ success: false, message: "error in creating new article" });
+  }
+};
 
-export const getArticle = (req, res) =>{
+export const getArticle = async (req, res) => {
+  const { id } = req.params;
 
-    const { id } = req.params;
-  
-    const foundArticle = articles.find((article) => article.id === id);
-  
-    res.send(foundArticle);
-  
-}
+  if (!id || !mongoose.isValidObjectId(id)) {
+    return res
+      .status(401)
+      .send({ success: false, message: "valid article id is required" });
+  }
+  try {
+    const article = await Article.findOne({ _id: id });
+    if (article) {
+      return res.render("pages/blog", {
+        article,
+      });
+      // return res.send({
+      //   success: true,
+      //   article,
+      // });
+    }
+    return res.send({
+      success: false,
+      message: "no article found with provided id",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, message: "error in getting articles" });
+  }
+};
 
-export const deleteArticle = (req, res) => {
+export const deleteArticle = async (req, res) => {
+  const { id } = req.params;
 
-    const { id } = req.params;
-  
-    articles = articles.filter((article) => article.id !== id);
-  
-    res.send(`Article with he id ${id} deleted from the database`)
-  
-}
+  if (!id || !mongoose.isValidObjectId(id)) {
+    return res
+      .status(401)
+      .send({ success: false, message: "valid article id is required" });
+  }
+  try {
+    const article = await Article.findOneAndDelete({ _id: id });
+    if (article) {
+      return res.send({
+        success: true,
+        message: `article with the id ${article._id} deleted from database`,
+      });
+    }
+    return res.send({
+      success: false,
+      message: "no article found with provided id",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, message: "error in getting articles" });
+  }
+};
 
-export const updateArticle = (req,res) =>{
+export const publishArticle = async (req, res) => {
+  const { id } = req.params;
 
-    const { id } =req.paramns;
-  
-    const {firstName, lastName, age} = req.body;
-  
-    const article = articles.find((article) => article.id == id);
-  
-    if(firstName) user.firstName = firstName;
-  
-    if(lastName) user.lastName = lastName;
-  
-    if(age) user.age = age;
-  
-    res.send(`Article with the id ${id} has been updated`);
-  
-}
+  if (!id || !mongoose.isValidObjectId(id)) {
+    return res
+      .status(401)
+      .send({ success: false, message: "valid article id is required" });
+  }
+  try {
+    const article = await Article.findOneAndUpdate(
+      { _id: id },
+      { status: "published" },
+      { new: true }
+    );
+    if (article) {
+      return res.send({
+        success: true,
+        message: `article with the id ${article._id} published`,
+      });
+    }
+    return res.send({
+      success: false,
+      message: "no article found with provided id",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ success: false, message: "error in getting articles" });
+  }
+};
+
+export const updateArticle = (req, res) => {
+  const { id } = req.paramns;
+
+  const { firstName, lastName, age } = req.body;
+
+  const article = articles.find((article) => article.id == id);
+
+  if (firstName) user.firstName = firstName;
+
+  if (lastName) user.lastName = lastName;
+
+  if (age) user.age = age;
+
+  res.send(`Article with the id ${id} has been updated`);
+};
