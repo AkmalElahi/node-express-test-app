@@ -1,8 +1,8 @@
-#Backend test app  
+# Backend test app  
 
  **this readme file is a guilde to learn logics in this application we can go file by file to understand it properly**
 
- ###app.js
+ ### app.js
 
 starting from line number 13
 we are connecting to our mongodb instance by using mongoose ORM .connect methode
@@ -17,7 +17,7 @@ from line 27 to 30 we ejs configure template engine
 then we have routes for home page create post page and not found page
 
 
-###controllers/articles.js
+### controllers/articles.js
 
 we import our mongoose schema for Aricle
 
@@ -34,12 +34,12 @@ we have publishArticle function that finds for a article and delete for provided
 nothing changed in updateArticle, you can delete it if you want.
 
 
-###models/article.js
+### models/article.js
 
 changed model as per requirement in the provided docs file.
 
 
-###EJS Template files
+### JS Template files
 
 we have two folders for ejs files public and views
 
